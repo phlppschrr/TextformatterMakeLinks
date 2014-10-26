@@ -1,0 +1,101 @@
+<?php
+
+/**
+ * TextformatterMakeLinks for ProcessWire
+ *
+ * All credits go to flourishlib
+ *
+ * ProcessWire 2.x
+ * Copyright (C) 2011 by Ryan Cramer
+ * Licensed under GNU/GPL v2, see LICENSE.TXT
+ *
+ * http://www.processwire.com
+ * http://www.ryancramer.com
+ *
+ */
+class TextformatterMakeLinks extends Textformatter
+{
+
+    public static function getModuleInfo()
+    {
+        return array(
+            'title' => __('Textformatter Make HTML Links', __FILE__),
+            'summary' => __("Takes a block of text and converts all URLs into HTML links", __FILE__),
+            'version' => 100,
+            'href' => 'http://flourishlib.com/api/fHTML#makeLinks',
+        );
+    }
+
+
+    /**
+     * Takes a block of text and converts all URLs into HTML links
+     * @param  string  $content The content to parse for links
+     */
+    public function format(&$content)
+    {
+        /** @var integer $link_text_length
+         * If non-zero, all link text will be truncated to this many characters
+         */
+        $link_text_length = 0;
+        // Find all a tags with contents, individual HTML tags and HTML comments
+        $reg_exp = "/<\s*a(?:\s+[\w:]+(?:\s*=\s*(?:\"[^\"]*?\"|'[^']*?'|[^'\">\s]+))?)*\s*>.*?<\s*\/\s*a\s*>|<\s*\/?\s*[\w:]+(?:\s+[\w:]+(?:\s*=\s*(?:\"[^\"]*?\"|'[^']*?'|[^'\">\s]+))?)*\s*\/?\s*>|<\!--.*?-->/s";
+        preg_match_all($reg_exp, $content, $html_matches, PREG_SET_ORDER);
+
+        // Find all text
+        $text_matches = preg_split($reg_exp, $content);
+
+        // For each chunk of text and create the links
+        foreach ($text_matches as $key => $text) {
+            preg_match_all(
+                '~
+                  \b([a-z]{3,}://[a-z0-9%\$\-_.+!*;/?:@=&\'\#,]+[a-z0-9\$\-_+!*;/?:@=&\'\#,])\b                           | # Fully URLs
+                  \b(www\.(?:[a-z0-9\-]+\.)+[a-z]{2,}(?:/[a-z0-9%\$\-_.+!*;/?:@=&\'\#,]+[a-z0-9\$\-_+!*;/?:@=&\'\#,])?)\b | # www. domains
+                  \b([a-z0-9\\.+\'_\\-]+@(?:[a-z0-9\\-]+\.)+[a-z]{2,})\b                                                    # email addresses
+                 ~ix',
+                $text,
+                $matches,
+                PREG_SET_ORDER
+            );
+
+            // For each match we find the first occurence, replace it and then
+            // start from the end of that finding the next occurence. This
+            // prevents double linking of matches for http://www.example.com and
+            // www.example.com
+            $last_pos = 0;
+            foreach ($matches as $match) {
+                $match_pos = strpos($text, $match[0], $last_pos);
+                $length = strlen($match[0]);
+                $prefix = '';
+
+                if (!empty($match[3])) {
+                    $prefix = 'mailto:';
+                } elseif (!empty($match[2])) {
+                    $prefix = 'http://';
+                }
+
+                $replacement = '<a href="' . $prefix . $match[0] . '">';
+                $replacement .= ($link_text_length && strlen($match[0]) > $link_text_length) ? substr($match[0], 0, $link_text_length) . "…" : $match[0];
+                $replacement .= '</a>';
+
+                $text = substr_replace(
+                    $text,
+                    $replacement,
+                    $match_pos,
+                    $length
+                );
+
+                $last_pos = $match_pos + strlen($replacement);
+            }
+
+            $text_matches[$key] = $text;
+        }
+
+        // Merge the text and html back together
+        for ($i = 0; $i < sizeof($html_matches); $i++) {
+            $text_matches[$i] .= $html_matches[$i][0];
+        }
+
+        $content = implode($text_matches);
+    }
+
+}
