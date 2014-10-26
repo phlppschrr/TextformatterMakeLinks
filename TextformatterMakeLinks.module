@@ -23,6 +23,7 @@ class TextformatterMakeLinks extends Textformatter
             'summary' => __("Takes a block of text and converts all URLs into HTML links", __FILE__),
             'version' => 100,
             'href' => 'http://flourishlib.com/api/fHTML#makeLinks',
+            'icon' => 'link',
         );
     }
 
