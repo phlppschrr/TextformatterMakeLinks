@@ -3,7 +3,7 @@ TextformatterMakeLinks for ProcessWire
 
 This Textformatter module is just a wrapper around the method fHTML::makeLinks from flourishlib (http://flourishlib.com/api/fHTML#makeLinks)
 
-The following description is basically just slightly modified copy from the official flourishlib documetation (http://flourishlib.com/docs/fHTML):
+The following description is basically just slightly modified copy from the official flourishlib documentation (http://flourishlib.com/docs/fHTML):
 
 The Textformatter will parse through a string and create HTML links out of anything that resembles a URL or email address, as long as it is not already part of an <a> tag.
 
