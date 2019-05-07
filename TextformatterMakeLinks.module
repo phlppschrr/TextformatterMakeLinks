@@ -21,7 +21,7 @@ class TextformatterMakeLinks extends Textformatter
         return array(
             'title' => __('Textformatter Make HTML Links', __FILE__),
             'summary' => __("Takes a block of text and converts all URLs into HTML links", __FILE__),
-            'version' => 100,
+            'version' => 101,
             'href' => 'http://flourishlib.com/api/fHTML#makeLinks',
             'icon' => 'link',
         );
@@ -49,17 +49,17 @@ class TextformatterMakeLinks extends Textformatter
         foreach ($text_matches as $key => $text) {
             preg_match_all(
                 '~
-                  \b([a-z]{3,}://[a-z0-9%\$\-_.+!*;/?:@=&\'\#,]+[a-z0-9\$\-_+!*;/?:@=&\'\#,])\b                           | # Fully URLs
-                  \b(www\.(?:[a-z0-9\-]+\.)+[a-z]{2,}(?:/[a-z0-9%\$\-_.+!*;/?:@=&\'\#,]+[a-z0-9\$\-_+!*;/?:@=&\'\#,])?)\b | # www. domains
-                  \b([a-z0-9\\.+\'_\\-]+@(?:[a-z0-9\\-]+\.)+[a-z]{2,})\b                                                    # email addresses
+                  \b([a-z]{3,}://[a-z0-9%\$\-_.+!*;/?:@=&\'\#,]+[a-z0-9\$\-_+!*;/?:@=&\'\#,])\b\/?                           | # Fully URLs
+                  \b(www\.(?:[a-z0-9\-]+\.)+[a-z]{2,}(?:/[a-z0-9%\$\-_.+!*;/?:@=&\'\#,]+[a-z0-9\$\-_+!*;/?:@=&\'\#,])?)\b\/? | # www. domains
+                  \b([a-z0-9\\.+\'_\\-]+@(?:[a-z0-9\\-]+\.)+[a-z]{2,})\b                                                       # email addresses
                  ~ix',
                 $text,
                 $matches,
                 PREG_SET_ORDER
             );
 
-            // For each match we find the first occurence, replace it and then
-            // start from the end of that finding the next occurence. This
+            // For each match we find the first occurrence, replace it and then
+            // start from the end of that finding the next occurrence. This
             // prevents double linking of matches for http://www.example.com and
             // www.example.com
             $last_pos = 0;
