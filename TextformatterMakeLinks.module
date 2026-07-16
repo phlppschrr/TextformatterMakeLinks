@@ -21,7 +21,7 @@ class TextformatterMakeLinks extends Textformatter
         return array(
             'title' => __('Textformatter Make HTML Links', __FILE__),
             'summary' => __("Takes a block of text and converts all URLs into HTML links", __FILE__),
-            'version' => 101,
+            'version' => 102,
             'href' => 'http://flourishlib.com/api/fHTML#makeLinks',
             'icon' => 'link',
         );
@@ -39,7 +39,7 @@ class TextformatterMakeLinks extends Textformatter
          */
         $link_text_length = 0;
         // Find all a tags with contents, individual HTML tags and HTML comments
-        $reg_exp = "/<\s*a(?:\s+[\w:]+(?:\s*=\s*(?:\"[^\"]*?\"|'[^']*?'|[^'\">\s]+))?)*\s*>.*?<\s*\/\s*a\s*>|<\s*\/?\s*[\w:]+(?:\s+[\w:]+(?:\s*=\s*(?:\"[^\"]*?\"|'[^']*?'|[^'\">\s]+))?)*\s*\/?\s*>|<\!--.*?-->/s";
+        $reg_exp = "/<\s*a(?:\s+[\w:-]+(?:\s*=\s*(?:\"[^\"]*?\"|'[^']*?'|[^'\">\s]+))?)*\s*>.*?<\s*\/\s*a\s*>|<\s*\/?\s*[\w:-]+(?:\s+[\w:-]+(?:\s*=\s*(?:\"[^\"]*?\"|'[^']*?'|[^'\">\s]+))?)*\s*\/?\s*>|<\!--.*?-->/s";
         preg_match_all($reg_exp, $content, $html_matches, PREG_SET_ORDER);
 
         // Find all text
